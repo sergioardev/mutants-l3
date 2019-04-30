@@ -1,6 +1,4 @@
 package com.mutants.app.service;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,18 +14,14 @@ public class DNAEntityProcessor {
 	@Autowired
 	private DNAEntityRepository repository;
 
-	private LinkedBlockingQueue<DNAEntityDTO> dnaRegistersToProcess;
+	@Autowired
+	private DNAEntityQueue queue;
 
 	@Scheduled(fixedRate = 2000)//FIXME:Ajustar!
 	public void processDNARegister(){
 		while(true){
-			DNAEntityDTO dto;
-			try{
-				dto = dnaRegistersToProcess.take();
-				persist(dto);
-			}catch (InterruptedException e){
-				e.printStackTrace();
-			}
+			DNAEntityDTO dto = queue.take();
+			persist(dto);
 		}
 	}
 
